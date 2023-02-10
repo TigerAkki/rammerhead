@@ -69,44 +69,8 @@
             element.textContent = '';
         }
     }
-    function getPassword() {
-        var element = document.getElementById('session-password');
-        return element ? element.value : '';
-    }
-    function get(url, callback, shush = false) {
-        var pwd = getPassword();
-        if (pwd) {
-            // really cheap way of adding a query parameter
-            if (url.includes('?')) {
-                url += '&pwd=' + pwd;
-            } else {
-                url += '?pwd=' + pwd;
-            }
-        }
-
-        var request = new XMLHttpRequest();
-        request.open('GET', url, true);
-        request.send();
-
-        request.onerror = function () {
-            if (!shush) setError('Cannot communicate with the server');
-        };
-        request.onload = function () {
-            if (request.status === 200) {
-                callback(request.responseText);
-            } else {
-                if (!shush)
-                    setError(
-                        'unexpected server response to not match "200". Server says "' + request.responseText + '"'
-                    );
-            }
-        };
-    }
 
     var api = {
-        needpassword(callback) {
-            get('/needpassword', value => callback(value === 'true'));
-        },
         newsession(callback) {
             get('/newsession', callback);
         },
@@ -259,12 +223,12 @@
         throw new TypeError('cannot find ' + id);
     }
 
-    get('/mainport', function (data) {
-        var defaultPort = window.location.protocol === 'https:' ? 443 : 80;
-        var currentPort = window.location.port || defaultPort;
-        var mainPort = data || defaultPort;
-        if (currentPort != mainPort) window.location.port = mainPort;
-    });
+    // get('/mainport', function (data) {
+    //     var defaultPort = window.location.protocol === 'https:' ? 443 : 80;
+    //     var currentPort = window.location.port || defaultPort;
+    //     var mainPort = data || defaultPort;
+    //     if (currentPort != mainPort) window.location.port = mainPort;
+    // });
 
     api.needpassword(doNeed => {
         if (doNeed) {
